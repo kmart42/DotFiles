@@ -25,11 +25,13 @@ font pango: SpaceMono Nerd Font Mono Medium 8
 
 # xss-lock grabs a logind suspend inhibit lock and will use i3lock to lock the
 # screen before suspend. Use loginctl lock-session to lock your screen.
-exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+
+#exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+bindsym $mod+p exec slock -m "$(cowsay -f $(ls /usr/share/cows/ | shuf -n1) "$(fortune)")"
 
 # NetworkManager is the most popular way to manage wireless networks on Linux,
 # and nm-applet is a desktop environment-independent system tray GUI for it.
-exec --no-startup-id nm-applet
+#exec --no-startup-id nm-applet
 
 # Use pactl to adjust volume in PulseAudio.
 set $refresh_i3status killall -SIGUSR1 i3status
@@ -43,7 +45,6 @@ floating_modifier $mod
 
 # start a terminal
 #bindsym $mod+Return exec i3-sensible-terminal
-#bindsym $mod+Return exec alacritty
 
 bindsym $mod+Return exec urxvt
 # kill focused window
@@ -187,9 +188,16 @@ bindsym $mod+r mode "resize"
 for_window[class=".*"] border pixel 2
 gaps inner 5
 
+# class                 border  backgr. text    indicator child_border
+client.focused          #4c7899 #285577 #ffffff #00ff00   #008000
+client.focused_inactive #333333 #5f676a #ffffff #484e50   #5f676a
+client.unfocused        #333333 #222222 #888888 #292d2e   #222222
+client.urgent           #2f343a #900000 #ffffff #900000   #900000
+client.placeholder      #000000 #0c0c0c #ffffff #000000   #0c0c0c
+
 exec_always --no-startup-id ~/.config/polybar/launch.sh
 exec --no-startup-id picom
-exec --no-startup-id feh --bg-scale ~/Downloads/bg1.png; sleep1;
-#exec --no-startup-id alacritty
+#exec --no-startup-id feh --bg-scale ~/Downloads/bg1.png; sleep1;
+exec --no-startup-id wal -i ~/Images/vapor4.jpg; sleep1;
 exec --no-startup-id urxvt
 exec --no-startup-id dunst
