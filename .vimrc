@@ -14,6 +14,10 @@ Plugin 'Valloric/YouCompleteMe'
 Plugin 'rhysd/vim-clang-format'
 Plugin 'vim-airline/vim-airline'
 Plugin 'vim-airline/vim-airline-themes'
+Plugin 'vim-scripts/indentpython.vim'
+Plugin 'vim-syntastic/syntastic'
+Plugin 'nvie/vim-flake8'
+Plugin 'scrooloose/nerdtree'
 "Plugin 'tmux/tmux'
 "Plugin 'christoomey/vim-tmux-navigator'
 "Plugin 'lifepillar/vim-solarized8'
@@ -33,11 +37,14 @@ filetype plugin on
 "
 " see :h vundle for more details or wiki for FAQ
 
+let mapleader = " "
+
 ":ClangFormat command is available. If you use it in normal mode, the whole code will be formatted.
 " If you use it in visual mode, the selected code will be formatted.
 "let g:clang_format#command = 'clang-format-10'
 "let g:clang_format#code_style='llvm'
-nnoremap <F6> :ClangFormat<CR>
+autocmd FileType c nnoremap <F6> :ClangFormat<CR>
+autocmd FileType cpp nnoremap <F6> :ClangFormat<CR>
 
 "YCM Notes
 "To edit flags, file .ycm_extra_conf.py in ~/.vim/bundle/YouCompleteMe
@@ -51,8 +58,18 @@ let g:ycm_clangd_binary_path = exepath("clangd")
 "python3 install.py --clangd-completer (clangd)
 "To restart YCM: :YcmRestartServer
 "YCM to recompile (with F5):
-nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+autocmd FileType c nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+autocmd FileType cpp nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
+
 "IDE Features (GoTo, type information, FixIt, and Refractoring):YcmCompleter
+
+"Compile and run with F7
+autocmd FileType cpp nnoremap <F7> :w <CR> :!clear ; g++ -Wall -O2 --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
+
+autocmd FileType c nnoremap <F7> :w <CR> :!clear ; gcc -Wall -Werror -march=native -lm --std=gnu99 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
+
+
+nnoremap <C-n> :NERDTree<CR>
 
 let g:airline_theme='deus'
 
@@ -61,8 +78,9 @@ let g:airline_theme='deus'
 "clipboard modification: use linux's clipboard
 set clipboard^=unnamed,unnamedplus
 
-"F7 creates a 'here' check
-nnoremap <F7> :normal i printf("here\n");<CR>
+"F3 creates a 'here' check
+autocmd FileType c nnoremap <F3> :normal i printf("here\n");<CR>
+autocmd FileType cpp nnoremap <F3> :normal i std::cout<<"here\n"<<std::endl;<CR>
 
 " Set solarized8 dark colors:
 "set background=dark
@@ -161,3 +179,63 @@ autocmd bufnewfile *.cpp exe "1," . 5 . "g/Creation Date :.*/s//Creation Date : 
 autocmd Bufwritepre,filewritepre *.cpp execute "normal ma"
 autocmd Bufwritepre,filewritepre *.cpp exe "1," . 5 . "g/Last Modified :.*/s/Last Modified :.*/Last Modified : " .strftime("%c")
 autocmd bufwritepost,filewritepost *.cpp execute "normal `a"
+
+" OmniSharp
+let g:omnicomplete_fetch_full_documentation = 1
+let g:OmniSharp_autoselect_existing_sln = 1
+let g:OmniSharp_popup_position = 'peek'
+let g:OmniSharp_highlighting = 3
+let g:OmniSharp_diagnostic_exclude_paths = [ 'Temp[/\\]', 'obj[/\\]', '\.nuget[/\\]' ]
+let g:OmniSharp_fzf_options = { 'down': '10' }
+
+augroup csharp_commands
+    autocmd!
+    autocmd FileType cs nmap <buffer> gd <Plug>(omnisharp_go_to_definition)
+    autocmd FileType cs nmap <buffer> <Leader><Space> <Plug>(omnisharp_code_actions)
+    autocmd FileType cs xmap <buffer> <Leader><Space> <Plug>(omnisharp_code_actions)
+    autocmd FileType cs nmap <buffer> <F2> <Plug>(omnisharp_rename)
+    autocmd FileType cs nmap <buffer> <Leader>cf <Plug>(omnisharp_code_format)
+    autocmd FileType cs nmap <buffer> <Leader>fi <Plug>(omnisharp_find_implementations)
+    autocmd FileType cs nmap <buffer> <Leader>fs <Plug>(omnisharp_find_symbol)
+    autocmd FileType cs nmap <buffer> <Leader>fu <Plug>(omnisharp_find_usages)
+    autocmd FileType cs nmap <buffer> <Leader>dc <Plug>(omnisharp_documentation)
+    autocmd FileType cs nmap <buffer> <Leader>cc <Plug>(omnisharp_global_code_check)
+    autocmd FileType cs nmap <buffer> <Leader>rt <Plug>(omnisharp_run_test)
+    autocmd FileType cs nmap <buffer> <Leader>rT <Plug>(omnisharp_run_tests_in_file)
+    autocmd FileType cs nmap <buffer> <Leader>ss <Plug>(omnisharp_start_server)
+    autocmd FileType cs nmap <buffer> <Leader>sp <Plug>(omnisharp_stop_server)
+    autocmd FileType cs nmap <buffer> <C-\> <Plug>(omnisharp_signature_help)
+    autocmd FileType cs imap <buffer> <C-\> <Plug>(omnisharp_signature_help)
+    "autocmd BufWritePre *.cs :OmniSharpCodeFormat
+
+" Python
+
+au BufNewFile,BufRead *.py
+    \ set tabstop=4 |
+    \ set softtabstop=4 |
+    \ set shiftwidth=4 |
+    \ set textwidth=79 |
+    \ set expandtab |
+    \ set autoindent |
+    \ set fileformat=unix
+
+highlight BadWhitespace ctermbg=red guibg=darkred
+au BufRead,BufNewFile *.py,*.pyw,*.c,*.h match BadWhitespace /\s\+$/
+
+let python_highlight_all=1
+syntax on
+
+"python with virtualenv support
+py3 3
+py3 << EOF
+import os
+import sys
+import subprocess
+if 'VIRTUAL_ENV' in os.environ:
+    project_base_dir = os.environ["VIRTUAL_ENV"]
+    script = os.path.join(project_base_dir, "bin/activate")
+    pipe = subprocess.Popen(". %s; env" % script, stdout=subprocess.PIPE, shell=True)
+    output = pipe.communicate()[0].decode('utf8').splitlines()
+    env = dict((line.split("=", 1) for line in output))
+    os.environ.update(env)
+EOF
