@@ -1,0 +1,26 @@
+python3
+Compiled vim from source with Python 3 support
+  for YouCompleteMe
+i3-gaps
+urxvt
+pywal
+pulseaudio
+pavucontrol
+neofetch (obviously)
+spotify-tui
+spotifyd
+  on void, run as 'spotifyd --no-daemon'
+ibhagwan picom fork (installed through xtools on void)
+dmenu (Luke's fork plus numbers patch)
+slock (my patch)
+surf (great for discord web browser)
+polybar
+color-scripts (alias in .bashrc)
+bluez
+  enable both bluetoothd and bus services
+feh
+git
+fortune | cowsay | lolcat
+cursor (~/.Xresources: 'Xcursor.theme: Breeze_Hacked')
+defja vu fonts
+zathura (mupdf)
