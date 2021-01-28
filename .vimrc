@@ -45,6 +45,9 @@ let mapleader = " "
 "let g:clang_format#code_style='llvm'
 autocmd FileType c nnoremap <F6> :ClangFormat<CR>
 autocmd FileType cpp nnoremap <F6> :ClangFormat<CR>
+autocmd FileType cs nnoremap <F6> :ClangFormat<CR>
+autocmd FileType python noremap <buffer> <F6> :call Autopep8()<CR>
+let g:autopep8_disable_show_diff=1
 
 "YCM Notes
 "To edit flags, file .ycm_extra_conf.py in ~/.vim/bundle/YouCompleteMe
@@ -65,9 +68,8 @@ autocmd FileType cpp nnoremap <F5> :YcmForceCompileAndDiagnostics<CR>
 
 "Compile and run with F7
 autocmd FileType cpp nnoremap <F7> :w <CR> :!clear ; g++ -Wall -O2 --std=c++17 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
-
 autocmd FileType c nnoremap <F7> :w <CR> :!clear ; gcc -Wall -Werror -march=native -lm --std=gnu99 %; if [ -f a.out ]; then time ./a.out; rm a.out; fi <CR>
-
+autocmd FileType cs nnoremap <F7> :w <CR> :!xbuild && cd bin/Debug && mono *.exe <CR>
 
 nnoremap <C-n> :NERDTree<CR>
 
@@ -80,7 +82,7 @@ set clipboard^=unnamed,unnamedplus
 
 "F3 creates a 'here' check
 autocmd FileType c nnoremap <F3> :normal i printf("here\n");<CR>
-autocmd FileType cpp nnoremap <F3> :normal i std::cout<<"here\n"<<std::endl;<CR>
+autocmd FileType cpp nnoremap <F3> :normal i cout<<"here\n"<<endl;<CR>
 
 " Set solarized8 dark colors:
 "set background=dark
